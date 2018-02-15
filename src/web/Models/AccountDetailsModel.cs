@@ -13,6 +13,8 @@ namespace web.Models
 
     public class AccountDetailsModel
     {
+        public decimal TotalDebit { get; set; }
+        public decimal TotalCredit { get; set; }
         public dal.models.Account Account { get; set; }
         public IEnumerable<TransactionWithDirection> AllTransactions { get; set; }
     }
@@ -25,5 +27,15 @@ namespace web.Models
         public string OtherCurrencyAcronym { get; set; }
         public dal.models.Transaction Transaction { get; set; }
 
+        public string GetCssClass()
+        {
+            if (this.Transaction.Type == dal.models.ETransactionType.Airdrop)
+                return "success";
+
+            if (this.Direction == EDirection.From)
+                return "success";
+            else
+                return "danger";
+        }
     }
 }

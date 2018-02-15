@@ -23,13 +23,13 @@
                 @Html.DisplayFor(modelItem => item.SourceFees) @item.SourceAccount.Currency.Acronym
             </td>
             <td>
-                <a asp-action="Details" asp-controller="Accounts" asp-route-id="@item.TargetAccount.ID">@item.TargetAccount.Name</a>
+                <a asp-action="Details" asp-controller="Accounts" asp-route-id="@item.TargetAccount?.ID">@item.TargetAccount?.Name</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TargetAmount) @item.TargetAccount.Currency.Acronym
+                @Html.DisplayFor(modelItem => item.TargetAmount) @item.TargetAccount?.Currency.Acronym
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TargetFees) @item.TargetAccount.Currency.Acronym
+                @Html.DisplayFor(modelItem => item.TargetFees) @item.TargetAccount?.Currency.Acronym
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Caption)

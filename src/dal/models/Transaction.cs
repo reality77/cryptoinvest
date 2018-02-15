@@ -7,12 +7,9 @@ namespace dal.models
 {
     public enum ETransactionType : byte
     {
-        Deposit = 0,
-        Withdrawal = 1,
-        Buy = 2,
-        Sell = 3,
-        Transfer = 4,
-        Airdrop = 5,
+        BuySell = 0,
+        Transfer = 1,
+        Airdrop = 2,
     }
 
     public class Transaction
@@ -39,7 +36,7 @@ namespace dal.models
         public Account TargetAccount { get; set; }
 
         [Display(Name = "Target account")]
-        public int TargetAccountID { get; set; }
+        public int? TargetAccountID { get; set; }
 
         /// <summary>
         /// Source net amount - without fees (in source account currency)

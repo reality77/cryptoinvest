@@ -42,7 +42,7 @@ namespace web.Controllers
                 CurrencyAcronym = account.Currency.Acronym,
                 Direction = EDirection.To,
                 OtherAccount = t.TargetAccount,
-                OtherCurrencyAcronym = t.TargetAccount.Currency.Acronym,
+                OtherCurrencyAcronym = t.TargetAccount?.Currency.Acronym,
                 Transaction = t,
             }).ToList();
 
@@ -51,12 +51,19 @@ namespace web.Controllers
                 CurrencyAcronym = account.Currency.Acronym,
                 Direction = EDirection.From,
                 OtherAccount = t.SourceAccount,
-                OtherCurrencyAcronym = t.TargetAccount.Currency.Acronym,
+                OtherCurrencyAcronym = t.TargetAccount?.Currency.Acronym,
                 Transaction = t,
             }));
 
+            var credit = account.SourceTransactions.Where(t => t.Type == ETransactionType.Airdrop).Sum(t => t.SourceAmount + t.SourceFees);
+            credit += account.TargetTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.TargetAmount + t.TargetFees);
+
+            var debit = account.SourceTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.SourceAmount + t.SourceFees);
+
             var model = new AccountDetailsModel
             {
+                TotalDebit = debit,
+                TotalCredit = credit,
                 Account = account,
                 AllTransactions = allTransactions.OrderByDescending(t => t.Transaction.Date),
             };

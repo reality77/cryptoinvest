@@ -22,6 +22,24 @@
         <dd>
             @Html.DisplayFor(model => model.Account.Caption)
         </dd>
+        <dt>
+            Total credit
+        </dt>
+        <dd>
+            @Model.TotalCredit
+        </dd>
+        <dt>
+            Total debit
+        </dt>
+        <dd>
+            @Model.TotalDebit
+        </dd>
+        <dt>
+            Balance
+        </dt>
+        <dd>
+            @(Model.TotalCredit - Model.TotalDebit)
+        </dd>
     </dl>
 </div>
 <div>
@@ -39,13 +57,13 @@
         <tbody>
             @foreach (var trx in Model.AllTransactions)
             {
-            <tr>
+            <tr class="@trx.GetCssClass()">
                 <td>@trx.Transaction.Date.ToString("d")</td>
                 <td>@trx.Transaction.Type.ToString()</td>
                 <td>@trx.Direction</td>
                 <td>@trx.OtherAccount?.Name</td>
-                <td>@trx.Transaction.SourceAmount @trx.Transaction.SourceAccount.Currency.Acronym</td>
-                <td>@trx.Transaction.TargetAmount @trx.Transaction.TargetAccount.Currency.Acronym</td>
+                <td>@(trx.Transaction.SourceAmount + trx.Transaction.SourceFees) @trx.Transaction.SourceAccount.Currency.Acronym</td>
+                <td>@(trx.Transaction.TargetAmount + trx.Transaction.TargetFees) @trx.Transaction.TargetAccount?.Currency.Acronym</td>
             </tr>
             }
         </tbody>
