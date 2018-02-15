@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -19,5 +20,7 @@ namespace dal.models
 
         [Required]
         public bool IsFiat { get; set; }
+
+        public List<Account> Accounts { get; set; }
     }
 }

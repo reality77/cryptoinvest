@@ -26,6 +26,12 @@ namespace dal
                 .HasIndex(x => new { x.UserID, x.Name })
                 .IsUnique(true);
 
+            modelBuilder.Entity<Account>()
+                .HasOne(x => x.Currency)
+                .WithMany(x => x.Accounts)
+                .HasForeignKey(x => x.CurrencyID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Transaction>()
                 .HasIndex(x => new { x.UserID, x.Date })
                 .IsUnique(false);
@@ -37,6 +43,18 @@ namespace dal
             modelBuilder.Entity<Transaction>()
                 .HasIndex(x => x.TargetAccountID)
                 .IsUnique(false);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOne(x => x.SourceAccount)
+                .WithMany(x => x.SourceTransactions)
+                .HasForeignKey(x => x.SourceAccountID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOne(x => x.TargetAccount)
+                .WithMany(x => x.TargetTransactions)
+                .HasForeignKey(x => x.TargetAccountID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Transaction>(pt => pt.Property(p => p.Date)
                 .HasColumnType("date"));

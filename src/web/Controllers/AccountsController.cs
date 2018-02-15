@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using dal;
 using dal.models;
+using web.Models;
 
 namespace web.Controllers
 {
@@ -31,14 +32,41 @@ namespace web.Controllers
                 return NotFound();
             }
 
-            var account = await _context.Accounts
+            var account = await _context.Accounts.Include(a => a.Currency)
+                .Include(a => a.SourceTransactions).ThenInclude(t => t.TargetAccount).ThenInclude(a => a.Currency)
+                .Include(a => a.TargetTransactions).ThenInclude(t => t.SourceAccount).ThenInclude(a => a.Currency)
                 .SingleOrDefaultAsync(m => m.ID == id);
+
+            var allTransactions = account.SourceTransactions.Select(t => new TransactionWithDirection
+            {
+                CurrencyAcronym = account.Currency.Acronym,
+                Direction = EDirection.To,
+                OtherAccount = t.TargetAccount,
+                OtherCurrencyAcronym = t.TargetAccount.Currency.Acronym,
+                Transaction = t,
+            }).ToList();
+
+            allTransactions.AddRange(account.TargetTransactions.Select(t => new TransactionWithDirection
+            {
+                CurrencyAcronym = account.Currency.Acronym,
+                Direction = EDirection.From,
+                OtherAccount = t.SourceAccount,
+                OtherCurrencyAcronym = t.TargetAccount.Currency.Acronym,
+                Transaction = t,
+            }));
+
+            var model = new AccountDetailsModel
+            {
+                Account = account,
+                AllTransactions = allTransactions.OrderByDescending(t => t.Transaction.Date),
+            };
+
             if (account == null)
             {
                 return NotFound();
             }
 
-            return View(account);
+            return View(model);
         }
 
         // GET: Accounts/Create

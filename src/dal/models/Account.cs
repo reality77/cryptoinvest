@@ -22,5 +22,9 @@ namespace dal.models
         public string Name { get; set; }
 
         public string Caption { get; set; }
+
+        public List<Transaction> SourceTransactions { get; set; }
+
+        public List<Transaction> TargetTransactions { get; set; }
     }
 }
