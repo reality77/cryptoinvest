@@ -12,9 +12,10 @@ using System;
 namespace dal.Migrations
 {
     [DbContext(typeof(CryptoInvestContext))]
-    partial class CryptoInvestContextModelSnapshot : ModelSnapshot
+    [Migration("20180215175658_foreignkeys")]
+    partial class foreignkeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
