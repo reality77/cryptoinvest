@@ -11,6 +11,8 @@ namespace dal.models
         Withdrawal = 1,
         Buy = 2,
         Sell = 3,
+        Transfer = 4,
+        Airdrop = 5,
     }
 
     public class Transaction
@@ -31,28 +33,38 @@ namespace dal.models
         public Account SourceAccount { get; set; }
 
         [Required]
+        [Display(Name = "Source account")]
         public int SourceAccountID { get; set; }
 
         public Account TargetAccount { get; set; }
 
+        [Display(Name = "Target account")]
         public int TargetAccountID { get; set; }
 
         /// <summary>
-        /// Amount (in source account currency)
+        /// Source net amount - without fees (in source account currency)
         /// </summary>
         [Required]
-        public decimal Amount { get; set; }
-
-        public decimal? Rate { get; set; }
+        [Display(Name = "Source net amount")]
+        public decimal SourceAmount { get; set; }
 
         /// <summary>
         /// Source Fees (in source account currency)
         /// </summary>
+        [Display(Name = "Source fees")]
         public decimal SourceFees { get; set; }
+
+        /// <summary>
+        /// Target net amount - without fees (in target account currency)
+        /// </summary>
+        [Required]
+        [Display(Name = "Target net amount")]
+        public decimal TargetAmount { get; set; }
 
         /// <summary>
         /// Target Fees (in target account currency)
         /// </summary>
+        [Display(Name = "Target fees")]
         public decimal TargetFees { get; set; }
 
         public string Caption { get; set; }

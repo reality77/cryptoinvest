@@ -73,20 +73,20 @@ namespace dal.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("Amount");
-
                     b.Property<string>("Caption");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
 
-                    b.Property<decimal?>("Rate");
-
                     b.Property<int>("SourceAccountID");
+
+                    b.Property<decimal>("SourceAmount");
 
                     b.Property<decimal>("SourceFees");
 
                     b.Property<int>("TargetAccountID");
+
+                    b.Property<decimal>("TargetAmount");
 
                     b.Property<decimal>("TargetFees");
 

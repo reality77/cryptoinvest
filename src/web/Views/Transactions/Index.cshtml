@@ -1,0 +1,106 @@
+﻿@model TransactionsFilterModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Rechercher une transaction</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-xs-12" style="margin-top:8px">
+                    <div class="col-sm-4">
+                        <label class="control-label">Rechercher</label>
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="text" asp-for="Term" class="form-control" placeholder="Filtrer la liste ...">
+                    </div>
+                    <div class="col-sm-3">
+                        <button class="btn btn-primary" type="button" onclick="filter(); return false;">Filtrer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Source account
+                </th>
+                <th>
+                    Source amount
+                </th>
+                <th>
+                    Source fees
+                </th>
+                <th>
+                    Target account
+                </th>
+                <th>
+                    Target amount
+                </th>
+                <th>
+                    Target fees
+                </th>
+                <th>
+                    Caption
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="updateBody">
+            <tr>
+                <td colspan="3">
+                    <em>Recherche en cours veuillez patienter ...</em>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@section scripts
+    {
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        filter();
+
+    });
+
+    function filter() {
+        $.ajax({
+            url: '@Url.Action("Filter")',
+            data:
+            {
+                Term: $("#Term").val(),
+            },
+            contentType: 'application/json',
+            dataType: 'html',
+            type: 'GET',
+            cache: false,
+            success: function (data) {
+                $('#updateBody').replaceWith(data);
+            },
+            error: function (data) {
+                alert('Une erreur est apparue pendant le chargement des bénévoles');
+            }
+        });
+    }
+    </script>
+}

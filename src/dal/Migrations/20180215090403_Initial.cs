@@ -67,13 +67,13 @@ namespace dal.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Amount = table.Column<decimal>(nullable: false),
                     Caption = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(type: "date", nullable: false),
-                    Rate = table.Column<decimal>(nullable: true),
                     SourceAccountID = table.Column<int>(nullable: false),
+                    SourceAmount = table.Column<decimal>(nullable: false),
                     SourceFees = table.Column<decimal>(nullable: false),
                     TargetAccountID = table.Column<int>(nullable: false),
+                    TargetAmount = table.Column<decimal>(nullable: false),
                     TargetFees = table.Column<decimal>(nullable: false),
                     Type = table.Column<byte>(nullable: false),
                     UserID = table.Column<int>(nullable: false)

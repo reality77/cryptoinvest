@@ -1,0 +1,440 @@
+﻿@model dal.models.Transaction
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Transaction</h4>
+<hr />
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<div class="row">
+    <div class="col-xs-4">
+        <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" class="active"><a data-toggle="tab" href="#deposit">Deposit</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#withdrawal">Withdrawal</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#buy">Buy</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#sell">Sell</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#transfer">Transfer</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#airdrop">Airdrop</a></li>
+        </ul>
+    </div>
+    <div class="tab-content col-xs-8">
+        <div id="deposit" class="tab-pane fade in active">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Type" type="hidden" value="0" class="form-control" />
+                <input asp-for="UserID" type="hidden" class="form-control" />
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="Date" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label class="control-label required">Account</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="SourceAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="SourceAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceAmount" class="form-control" />
+                        <span id="validationSourceAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceFees" class="form-control" />
+                        <span id="validationSourceFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="submit(); return false;">Créer</button>
+                </div>
+            </form>
+        </div>
+        <div id="withdrawal" class="tab-pane fade">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Type" type="hidden" value="1" class="form-control" />
+                <input asp-for="UserID" type="hidden" class="form-control" />
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="Date" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label class="control-label required">Account</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="SourceAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="SourceAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceAmount" class="form-control" />
+                        <span id="validationSourceAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceFees" class="form-control" />
+                        <span id="validationSourceFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="submit(); return false;">Créer</button>
+                </div>
+            </form>
+        </div>
+        <div id="buy" class="tab-pane fade">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Type" type="hidden" value="2" class="form-control" />
+                <input asp-for="UserID" type="hidden" class="form-control" />
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="Date" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAccountID" class="control-label required"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="SourceAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="SourceAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceAmount" class="form-control" />
+                        <span id="validationSourceAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceFees" class="form-control" />
+                        <span id="validationSourceFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetAccountID" class="control-label required"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="TargetAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="TargetAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="TargetAmount" class="form-control" />
+                        <span id="validationTargetAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="TargetFees" class="form-control" />
+                        <span id="validationTargetFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="submit(); return false;">Créer</button>
+                </div>
+            </form>
+        </div>
+        <div id="sell" class="tab-pane fade">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Type" type="hidden" value="3" class="form-control" />
+                <input asp-for="UserID" type="hidden" class="form-control" />
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="Date" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAccountID" class="control-label required"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="SourceAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="SourceAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceAmount" class="form-control" />
+                        <span id="validationSourceAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceFees" class="form-control" />
+                        <span id="validationSourceFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetAccountID" class="control-label required"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="TargetAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="TargetAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="TargetAmount" class="form-control" />
+                        <span id="validationTargetAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="TargetFees" class="form-control" />
+                        <span id="validationTargetFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="submit(); return false;">Créer</button>
+                </div>
+            </form>
+        </div>
+        <div id="transfer" class="tab-pane fade">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Type" type="hidden" value="4" class="form-control" />
+                <input asp-for="UserID" type="hidden" class="form-control" />
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="Date" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAccountID" class="control-label required"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="SourceAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="SourceAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceAmount" class="form-control" />
+                        <span id="validationSourceAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceFees" class="form-control" />
+                        <span id="validationSourceFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetAccountID" class="control-label required"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="TargetAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="TargetAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="TargetAmount" class="form-control" />
+                        <span id="validationTargetAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="TargetFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="TargetFees" class="form-control" />
+                        <span id="validationTargetFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="submit(); return false;">Créer</button>
+                </div>
+            </form>
+        </div>
+        <div id="airdrop" class="tab-pane fade">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Type" type="hidden" value="5" class="form-control" />
+                <input asp-for="UserID" type="hidden" class="form-control" />
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="Date" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label class="control-label required">Account</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select asp-for="SourceAccountID" asp-items="@(new SelectList(ViewBag.Accounts, "ID","Name"))" class="form-control">
+                            <option value="">- Select an account -</option>
+                        </select>
+                        <span asp-validation-for="SourceAccountID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceAmount" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceAmount" class="form-control" />
+                        <span id="validationSourceAmount" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 text-right">
+                        <label asp-for="SourceFees" class="control-label"></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input asp-for="SourceFees" class="form-control" />
+                        <span id="validationSourceFees" class="text-danger" style="display:none"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="submit(); return false;">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+
+    function validateNumber(fieldName) {
+
+        var fieldval = $("#" + fieldName).val();
+        var val = parseFloat(fieldval.replace(",", ".").replace(".", "!"));
+
+        if (isNaN(val)) {
+            $("#validation" + fieldName).html("Veuillez renseigner un nombre valide");
+            $("#validation" + fieldName).show();
+            return false;
+        } else {
+            $("#validation" + fieldName).hide();
+            return true;
+        }
+    }
+
+    function submit() {
+
+        if (!validateNumber("SourceAmount"))
+            return;
+        if (!validateNumber("SourceFees"))
+            return;
+        if (!validateNumber("TargetAmount"))
+            return;
+        if (!validateNumber("TargetFees"))
+            return;
+
+        $("form").submit();
+    }
+</script>
+}
+    

@@ -96,6 +96,53 @@ namespace dal
 
                 this.SaveChanges();
             }
+
+            if (this.Accounts.Count() == 0)
+            {
+                this.Accounts.Add(new Account
+                {
+                    Name = "Banque",
+                    CurrencyID = 1,
+                    UserID = 1
+                });
+
+                this.Accounts.Add(new Account
+                {
+                    Name = "Coinbase EUR",
+                    CurrencyID = 1,
+                    UserID = 1
+                });
+
+                this.Accounts.Add(new Account
+                {
+                    Name = "Coinbase BTC",
+                    CurrencyID = 3,
+                    UserID = 1
+                });
+
+                this.Accounts.Add(new Account
+                {
+                    Name = "Coinbase ETH",
+                    CurrencyID = 4,
+                    UserID = 1
+                });
+
+                this.Accounts.Add(new Account
+                {
+                    Name = "Kraken BTC",
+                    CurrencyID = 3,
+                    UserID = 1
+                });
+
+                this.Accounts.Add(new Account
+                {
+                    Name = "Kraken ETH",
+                    CurrencyID = 4,
+                    UserID = 1
+                });
+
+                this.SaveChanges();
+            }
         }
     }
 }

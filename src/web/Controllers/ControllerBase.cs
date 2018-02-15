@@ -22,5 +22,12 @@ namespace web.Controllers
 
             ViewBag.Currencies = currencies;
         }
+
+        protected void SetViewBagAccounts()
+        {
+            var accs = _context.Accounts.AsQueryable();
+
+            ViewBag.Accounts = accs.OrderBy(a => a.Name);
+        }
     }
 }

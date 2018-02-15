@@ -1,0 +1,57 @@
+﻿@model IEnumerable<dal.models.Transaction>
+
+@{
+    Layout = null;
+}
+
+<tbody id="updateBody">
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceAccount.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceAmount) @item.SourceAccount.Currency.Acronym
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceFees) @item.SourceAccount.Currency.Acronym
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TargetAccount.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TargetAmount) @item.TargetAccount.Currency.Acronym
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TargetFees) @item.TargetAccount.Currency.Acronym
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Caption)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+</tbody>
+
+@section scripts {
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+            $(".nav-tabs a").click(function () {
+                $(this).tab('show');
+            });
+    });
+
+</script>
+}
