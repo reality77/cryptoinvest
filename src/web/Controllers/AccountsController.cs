@@ -21,7 +21,10 @@ namespace web.Controllers
         // GET: Accounts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Accounts.ToListAsync());
+            return View(await _context.Accounts.Include(a => a.Currency)
+                .Include(a => a.SourceTransactions).ThenInclude(t => t.TargetAccount).ThenInclude(a => a.Currency)
+                .Include(a => a.TargetTransactions).ThenInclude(t => t.SourceAccount).ThenInclude(a => a.Currency)
+                .ToListAsync());
         }
 
         // GET: Accounts/Details/5
@@ -55,10 +58,8 @@ namespace web.Controllers
                 Transaction = t,
             }));
 
-            var credit = account.SourceTransactions.Where(t => t.Type == ETransactionType.Airdrop).Sum(t => t.SourceAmount + t.SourceFees);
-            credit += account.TargetTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.TargetAmount + t.TargetFees);
-
-            var debit = account.SourceTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.SourceAmount + t.SourceFees);
+            var credit = account.GetCreditSum();
+            var debit = account.GetDebitSum();
 
             var model = new AccountDetailsModel
             {
