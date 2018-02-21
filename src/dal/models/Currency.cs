@@ -16,11 +16,13 @@ namespace dal.models
         [Required]
         public string Acronym { get; set; }
 
-        public string CssImagePath { get; set; }
+        public string CurrencySymbol { get; set; }
 
         [Required]
         public bool IsFiat { get; set; }
 
         public List<Account> Accounts { get; set; }
+
+        public int? RoundToDecimals { get; set; }
     }
 }
