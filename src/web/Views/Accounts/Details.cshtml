@@ -26,19 +26,19 @@
             Total credit
         </dt>
         <dd>
-            @Model.TotalCredit
+            @Model.Account.GetAmountString(Model.TotalCredit)
         </dd>
         <dt>
             Total debit
         </dt>
         <dd>
-            @Model.TotalDebit
+            @Model.Account.GetAmountString(Model.TotalDebit)
         </dd>
         <dt>
             Balance
         </dt>
         <dd>
-            @(Model.TotalCredit - Model.TotalDebit)
+            @Model.Account.GetAmountString(Model.TotalCredit - Model.TotalDebit)
         </dd>
     </dl>
 </div>
@@ -48,10 +48,14 @@
             <tr>
                 <th>Date</th>
                 <th>Type</th>
-                <th>Direction</th>
                 <th>Account</th>
-                <th>Source Amount</th>
-                <th>Target Amount</th>
+                <th colspan="3" class="text-center">Amount</th>
+            </tr>
+            <tr>
+                <th colspan="3"></th>
+                <th class="small">Source</th>
+                <th class="small">Target</th>
+                <th class="small">Rate</th>
             </tr>
         </thead>
         <tbody>
@@ -60,10 +64,61 @@
             <tr class="@trx.GetCssClass()">
                 <td>@trx.Transaction.Date.ToString("d")</td>
                 <td>@trx.Transaction.Type.ToString()</td>
-                <td>@trx.Direction</td>
-                <td>@trx.OtherAccount?.Name</td>
-                <td>@(trx.Transaction.SourceAmount + trx.Transaction.SourceFees) @trx.Transaction.SourceAccount.Currency.Acronym</td>
-                <td>@(trx.Transaction.TargetAmount + trx.Transaction.TargetFees) @trx.Transaction.TargetAccount?.Currency.Acronym</td>
+                <td>
+                    @if (trx.Direction == EDirection.To && trx.Transaction.Type != dal.models.ETransactionType.Airdrop)
+                    {
+                        <span><i class="glyphicon glyphicon-arrow-right red" style="margin-right:4px" title="To"></i></span>
+                    }
+                    else
+                    {
+                        <span><i class="glyphicon glyphicon-arrow-left green" style="margin-right:4px" title="From"></i></span>
+                    }
+
+                    @if (trx.OtherAccount != null)
+                    {
+                    <span>
+                        <a asp-action="Details" asp-route-id="@trx.OtherAccount.ID">@trx.OtherAccount.Name</a>
+                    </span>
+                    }
+                </td>
+                @if (trx.Transaction.Type == dal.models.ETransactionType.BuySell)
+                {
+                    <td>
+                        <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceAmount + trx.Transaction.SourceFees)</span>
+                        @if (trx.Transaction.SourceFees > 0)
+                        {
+                            <br />
+                            <span class="small">Source fees : @trx.Transaction.SourceFees</span>
+                        }
+                    </td>
+                    <td>
+                        <span>@trx.Transaction.TargetAccount.GetAmountString(trx.Transaction.TargetAmount + trx.Transaction.TargetFees)</span>
+                        @if (trx.Transaction.TargetFees > 0)
+                        {
+                            <br />
+                            <span class="small">Target fees : @trx.Transaction.TargetFees</span>
+                        }
+                    </td>
+                    <td>
+                        <span>@@ @trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceAmount / trx.Transaction.TargetAmount, includeCurrency: false) @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()/@trx.Transaction.TargetAccount?.Currency.GetCurrencySymbol()</span>
+                    </td>
+                }
+                else
+                {
+                <td colspan="3">
+                    <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceAmount)</span>
+                    @if (trx.Transaction.SourceFees > 0)
+                    {
+                    <br/>
+                    <span class="small">Source fees not included : @trx.Transaction.SourceFees</span>
+                    }
+                    @if (trx.Transaction.TargetFees > 0)
+                    {
+                    <br />
+                    <span class="small">Target fees not included : @trx.Transaction.TargetFees</span>
+                    }
+                </td>
+                }
             </tr>
             }
         </tbody>

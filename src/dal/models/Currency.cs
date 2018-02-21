@@ -24,5 +24,13 @@ namespace dal.models
         public List<Account> Accounts { get; set; }
 
         public int? RoundToDecimals { get; set; }
+
+        public string GetCurrencySymbol()
+        {
+            if (!string.IsNullOrEmpty(this.CurrencySymbol))
+                return this.CurrencySymbol;
+            else
+                return this.Acronym;
+        }
     }
 }
