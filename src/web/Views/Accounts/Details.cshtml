@@ -88,7 +88,7 @@
                         @if (trx.Transaction.SourceFees > 0)
                         {
                             <br />
-                            <span class="small">Source fees : @trx.Transaction.SourceFees</span>
+                            <span class="small">Source fees : @trx.Transaction.SourceFees @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()</span>
                         }
                     </td>
                     <td>
@@ -96,7 +96,7 @@
                         @if (trx.Transaction.TargetFees > 0)
                         {
                             <br />
-                            <span class="small">Target fees : @trx.Transaction.TargetFees</span>
+                            <span class="small">Target fees : @trx.Transaction.TargetFees @trx.Transaction.TargetAccount.Currency.GetCurrencySymbol()</span>
                         }
                     </td>
                     <td>
@@ -110,12 +110,12 @@
                     @if (trx.Transaction.SourceFees > 0)
                     {
                     <br/>
-                    <span class="small">Source fees not included : @trx.Transaction.SourceFees</span>
+                    <span class="small">Source fees : @trx.Transaction.SourceFees @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()</span>
                     }
                     @if (trx.Transaction.TargetFees > 0)
                     {
                     <br />
-                    <span class="small">Target fees not included : @trx.Transaction.TargetFees</span>
+                    <span class="small">Target fees : @trx.Transaction.TargetFees</span>
                     }
                 </td>
                 }
