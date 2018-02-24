@@ -20,6 +20,13 @@ namespace web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            /* test - to remove
+            var svc = new Services.GDAXPlatformService();
+            var ccySource = _context.Currencies.SingleOrDefault(c => c.Acronym == "ETH");
+            var ccyTarget = _context.Currencies.SingleOrDefault(c => c.Acronym == "EUR");
+            await svc.GetRates(ccySource, ccyTarget, new DateTime(2018, 01, 01), new DateTime(2018, 01, 02), 86400);
+            */
+
             var filter = new TransactionsFilterModel();
 
             return View(filter);
