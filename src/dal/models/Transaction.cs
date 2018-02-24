@@ -39,11 +39,11 @@ namespace dal.models
         public int? TargetAccountID { get; set; }
 
         /// <summary>
-        /// Source net amount - without fees (in source account currency)
+        /// Source gross amount
         /// </summary>
         [Required]
-        [Display(Name = "Source net amount")]
-        public decimal SourceAmount { get; set; }
+        [Display(Name = "Source gross amount")]
+        public decimal SourceGrossAmount { get; set; }
 
         /// <summary>
         /// Source Fees (in source account currency)
@@ -52,11 +52,11 @@ namespace dal.models
         public decimal SourceFees { get; set; }
 
         /// <summary>
-        /// Target net amount - without fees (in target account currency)
+        /// Target net amount - fees deducted (in target account currency)
         /// </summary>
         [Required]
         [Display(Name = "Target net amount")]
-        public decimal TargetAmount { get; set; }
+        public decimal TargetNetAmount { get; set; }
 
         /// <summary>
         /// Target Fees (in target account currency)

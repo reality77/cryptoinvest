@@ -92,7 +92,7 @@
                 @if (trx.Transaction.Type == dal.models.ETransactionType.BuySell)
                 {
                     <td>
-                        <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceAmount + trx.Transaction.SourceFees)</span> 
+                        <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceGrossAmount)</span> 
                         @if (trx.Transaction.SourceFees > 0)
                         {
                             <span><i class="glyphicon glyphicon-info-sign" title="Amount is GROSS (does not include source fees)"></i></span>
@@ -101,7 +101,7 @@
                         }
                     </td>
                     <td>
-                        <span>@trx.Transaction.TargetAccount.GetAmountString(trx.Transaction.TargetAmount)</span> 
+                        <span>@trx.Transaction.TargetAccount.GetAmountString(trx.Transaction.TargetNetAmount)</span> 
                         @if (trx.Transaction.TargetFees > 0)
                         {
                             <span><i class="glyphicon glyphicon-info-sign" title="Amount is NET (includes target fees)"></i></span>
@@ -110,13 +110,13 @@
                         }
                     </td>
                     <td>
-                        <span>@@ @trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceAmount / trx.Transaction.TargetAmount, includeCurrency: false) @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()/@trx.Transaction.TargetAccount?.Currency.GetCurrencySymbol()</span>
+                        <span>@@ @trx.Transaction.SourceAccount.GetAmountString((trx.Transaction.SourceGrossAmount - trx.Transaction.SourceFees) / trx.Transaction.TargetNetAmount, includeCurrency: false) @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()/@trx.Transaction.TargetAccount?.Currency.GetCurrencySymbol()</span>
                     </td>
                 }
                 else
                 {
                 <td colspan="3">
-                    <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceAmount)</span>
+                    <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceGrossAmount)</span>
                     @if (trx.Transaction.SourceFees > 0)
                     {
                     <br/>

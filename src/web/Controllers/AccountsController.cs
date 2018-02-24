@@ -60,19 +60,18 @@ namespace web.Controllers
 
             var model = new AccountDetailsModel
             {
-                TotalNetDebit = account.GetNetDebitSum(),
-                TotalNetCredit = account.GetNetCreditSum(),
-                TotalGrossDebit = account.GetGrossDebitSum(),
-                TotalGrossCredit = account.GetGrossCreditSum(),
-                GrossBalance = account.GetGrossBalance(),
+                TotalNetDebit = account.GetDebitSum(netAmount: true),
+                TotalNetCredit = account.GetCreditSum(netAmount: true),
+                TotalGrossDebit = account.GetDebitSum(netAmount: false),
+                TotalGrossCredit = account.GetCreditSum(netAmount: false),
                 Account = account,
                 AllTransactions = allTransactions.OrderByDescending(t => t.Transaction.Date),
             };
 
+            model.GrossBalance = model.TotalGrossCredit - model.TotalGrossDebit;
+
             if (account == null)
-            {
                 return NotFound();
-            }
 
             return View(model);
         }

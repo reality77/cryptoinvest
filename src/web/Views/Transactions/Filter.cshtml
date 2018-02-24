@@ -17,7 +17,7 @@
                 <a asp-action="Details" asp-controller="Accounts" asp-route-id="@item.SourceAccount.ID">@item.SourceAccount.Name</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SourceAmount) @item.SourceAccount.Currency.Acronym
+                @Html.DisplayFor(modelItem => item.SourceGrossAmount) @item.SourceAccount.Currency.Acronym
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SourceFees) @item.SourceAccount.Currency.Acronym
@@ -26,7 +26,7 @@
                 <a asp-action="Details" asp-controller="Accounts" asp-route-id="@item.TargetAccount?.ID">@item.TargetAccount?.Name</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TargetAmount) @item.TargetAccount?.Currency.Acronym
+                @Html.DisplayFor(modelItem => item.TargetNetAmount) @item.TargetAccount?.Currency.Acronym
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TargetFees) @item.TargetAccount?.Currency.Acronym
