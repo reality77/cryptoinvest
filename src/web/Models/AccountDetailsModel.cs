@@ -13,8 +13,14 @@ namespace web.Models
 
     public class AccountDetailsModel
     {
-        public decimal TotalDebit { get; set; }
-        public decimal TotalCredit { get; set; }
+        public decimal TotalNetDebit { get; set; }
+        public decimal TotalNetCredit { get; set; }
+
+        public decimal TotalGrossDebit { get; set; }
+        public decimal TotalGrossCredit { get; set; }
+
+        public decimal GrossBalance { get; set; }
+
         public dal.models.Account Account { get; set; }
         public IEnumerable<TransactionWithDirection> AllTransactions { get; set; }
     }

@@ -58,13 +58,13 @@ namespace web.Controllers
                 Transaction = t,
             }));
 
-            var credit = account.GetCreditSum();
-            var debit = account.GetDebitSum();
-
             var model = new AccountDetailsModel
             {
-                TotalDebit = debit,
-                TotalCredit = credit,
+                TotalNetDebit = account.GetNetDebitSum(),
+                TotalNetCredit = account.GetNetCreditSum(),
+                TotalGrossDebit = account.GetGrossDebitSum(),
+                TotalGrossCredit = account.GetGrossCreditSum(),
+                GrossBalance = account.GetGrossBalance(),
                 Account = account,
                 AllTransactions = allTransactions.OrderByDescending(t => t.Transaction.Date),
             };

@@ -28,20 +28,39 @@ namespace dal.models
 
         public List<Transaction> TargetTransactions { get; set; }
 
-        public decimal GetBalance()
+        public decimal GetNetBalance() => GetNetCreditSum() - GetNetDebitSum();
+
+        public decimal GetGrossBalance() => GetGrossCreditSum() - GetGrossDebitSum();
+
+        public decimal GetGrossDebitSum() => GetDebitSum(includeSourceFees: true);
+
+        public decimal GetNetDebitSum() => GetDebitSum(includeSourceFees: false);
+
+        public decimal GetGrossCreditSum() => GetCreditSum(includeSourceFees: true, includeTargetFees: true);
+
+        public decimal GetNetCreditSum() => GetCreditSum(includeSourceFees: false, includeTargetFees: false);
+
+        public decimal GetDebitSum(bool includeSourceFees)
         {
-            return GetCreditSum() - GetDebitSum();
+            if(includeSourceFees)
+                return this.SourceTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.SourceAmount + t.SourceFees);
+            else
+                return this.SourceTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.SourceAmount);
         }
 
-        public decimal GetDebitSum()
+        public decimal GetCreditSum(bool includeSourceFees, bool includeTargetFees)
         {
-            return this.SourceTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.SourceAmount + t.SourceFees);
-        }
+            decimal credit = 0;
 
-        public decimal GetCreditSum()
-        {
-            var credit = this.SourceTransactions.Where(t => t.Type == ETransactionType.Airdrop).Sum(t => t.SourceAmount + t.SourceFees);
-            credit += this.TargetTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.TargetAmount + t.TargetFees);
+            if(includeSourceFees)
+                credit += this.SourceTransactions.Where(t => t.Type == ETransactionType.Airdrop).Sum(t => t.SourceAmount + t.SourceFees);
+            else
+                credit += this.SourceTransactions.Where(t => t.Type == ETransactionType.Airdrop).Sum(t => t.SourceAmount);
+
+            if(includeTargetFees)
+                credit += this.TargetTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.TargetAmount + t.TargetFees);
+            else
+                credit += this.TargetTransactions.Where(t => t.Type == ETransactionType.BuySell || t.Type == ETransactionType.Transfer).Sum(t => t.TargetAmount);
 
             return credit;
         }

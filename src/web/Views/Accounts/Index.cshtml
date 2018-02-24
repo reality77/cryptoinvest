@@ -18,7 +18,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Caption)
             </th>
-            <th>
+            <th colspan="2">
                 Balance
             </th>
             <th></th>
@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Caption)
             </td>
             <td>
-                @item.GetBalance() @item.Currency.Acronym
+                <span>@item.GetAmountString(item.GetNetBalance())</span>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
