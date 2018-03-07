@@ -79,8 +79,7 @@ namespace web
 
             // Astuce pour appeler une méthode de SeedData
             var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
-            serviceScopeFactory.SeedData();
-
+            serviceScopeFactory.InitializeData();
         }
 
         private RequestLocalizationOptions BuildLocalizationOptions()

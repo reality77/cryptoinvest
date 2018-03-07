@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using web.Services;
 
 namespace web
 {
@@ -10,13 +11,13 @@ namespace web
     {
         // Astuce pour appeler une méthode de SeedData
         // TODO: Move this code when seed data is implemented in EF 7
-
-        public static void SeedData(this IServiceScopeFactory scopeFactory)
+        public static void InitializeData(this IServiceScopeFactory scopeFactory)
         {
             using (var serviceScope = scopeFactory.CreateScope())
             {
                 var dbcontext = serviceScope.ServiceProvider.GetService<dal.CryptoInvestContext>();
-                dbcontext.SeedData();
+                dbcontext.OnInit();
+                RatesSynchronization.AutoSync(dbcontext);
             }
         }
     }

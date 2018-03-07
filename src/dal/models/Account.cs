@@ -14,10 +14,12 @@ namespace dal.models
         [Required]
         public int UserID { get; set; }
 
-        public Currency Currency { get; set; }
-
         [Required]
         public int CurrencyID { get; set; }
+        public Currency Currency { get; set; }
+
+        public int? PlatformID { get; set; }
+        public Platform Platform { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -69,6 +71,11 @@ namespace dal.models
                 return amountRounded.ToString() + " " + this.Currency.GetCurrencySymbol();
             else
                 return amountRounded.ToString();
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Name} ({this.ID})";
         }
     }
 }

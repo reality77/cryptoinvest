@@ -25,12 +25,23 @@ namespace dal.models
 
         public int? RoundToDecimals { get; set; }
 
+        public List<PlatformRate> SourcePlatformRates { get; set; }
+        public List<PlatformRate> TargetPlatformRates { get; set; }
+
+        public List<PlatformCurrencyPair> SourcePlatformCurrencyPairs { get; set; }
+        public List<PlatformCurrencyPair> TargetPlatformCurrencyPairs { get; set; }
+
         public string GetCurrencySymbol()
         {
             if (!string.IsNullOrEmpty(this.CurrencySymbol))
                 return this.CurrencySymbol;
             else
                 return this.Acronym;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Acronym} ({this.ID})";
         }
     }
 }
