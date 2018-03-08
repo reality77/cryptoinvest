@@ -48,62 +48,10 @@ namespace web.Services
 
             Task.WaitAll(tasks.ToArray());
 
-            foreach (var platform in context.Platforms.Include(p => p.PlatformCurrencyPairs))
+            foreach (var platformId in context.Platforms.Include(p => p.PlatformCurrencyPairs).Select(p => p.ID))
             {
-                if(platform.PlatformCurrencyPairs != null && platform.PlatformCurrencyPairs.Count() > 0)
-                {
-                    foreach (var pairs in platform.PlatformCurrencyPairs)
-                    {
-                        bool? takeSource = null;
-
-                        if (pairs.SourceCurrencyID == context.DefaultFiatCurrency.ID)
-                            takeSource = false;
-                        else if(pairs.TargetCurrencyID == context.DefaultFiatCurrency.ID)
-                            takeSource = true;
-
-                        if(takeSource != null)
-                        {
-                            IEnumerable<dal.models.Transaction> transactions;
-
-                            if (takeSource == true)
-                            {
-                                transactions = context.Transactions.Include(t => t.SourceAccount).ThenInclude(a => a.Currency)
-                                    .Where(t => t.SourceAccount.PlatformID == platform.ID && t.SourceAccount.CurrencyID == pairs.SourceCurrencyID);
-                            }
-                            else
-                            {
-                                transactions = context.Transactions.Include(t => t.TargetAccount).ThenInclude(a => a.Currency)
-                                    .Where(t => t.SourceAccount.PlatformID == platform.ID && t.TargetAccount.CurrencyID == pairs.TargetCurrencyID);
-                            }
-
-                            if (transactions.Count() > 0)
-                            {
-                                var startDate = context.Transactions
-                                    .OrderBy(t => new { t.Date })
-                                    .First()
-                                    .Date;
-
-                                var endDate = DateTime.Today.AddDays(-1);
-
-                                if (startDate != null)
-                                {
-                                    var lastDate = context.PlatformRates
-                                        .Where(r => r.PlatformID == pairs.PlatformID && r.SourceCurrencyID == pairs.SourceCurrencyID && r.TargetCurrencyID == pairs.TargetCurrencyID)
-                                        .OrderByDescending(r => r.Date)
-                                        .FirstOrDefault(r => r.Date > startDate)?.Date;
-
-                                    if (lastDate != null)
-                                        startDate = lastDate.Value;
-                                }
-
-                                var service = PlatformServices.Instance.Get(platform.Name.ToUpper());
-                                var results = service.RetrieveRates(pairs.SourceCurrency, pairs.TargetCurrency, startDate, endDate, 86400).Result;
-
-                                // TODO : Insert results in DB
-                            }
-                        }
-                    }
-                }
+                // Each platform will be synchronized asynchronously
+                Task.Run(() => SynchronizePlatformAsync(platformId));
             }
         }
 
@@ -123,6 +71,90 @@ namespace web.Services
             {
                 task.Start();
             });
+        }
+
+        private static void SynchronizePlatformAsync(int platformId)
+        {
+            var factory = new dal.CryptoInvestContextFactory();
+
+            var contextLocal = factory.CreateDbContext(null);
+            contextLocal.InitDefaultCurrency();
+
+            var platform = contextLocal.Platforms
+                .Include(p => p.PlatformCurrencyPairs)
+                .Single(p => p.ID == platformId);
+
+            if (platform.PlatformCurrencyPairs != null && platform.PlatformCurrencyPairs.Count() > 0)
+            {
+                foreach (var pairs in platform.PlatformCurrencyPairs)
+                {
+                    bool? takeSource = null;
+
+                    if (pairs.SourceCurrencyID == contextLocal.DefaultFiatCurrency.ID)
+                        takeSource = false;
+                    else if (pairs.TargetCurrencyID == contextLocal.DefaultFiatCurrency.ID)
+                        takeSource = true;
+
+                    if (takeSource != null)
+                    {
+                        IEnumerable<dal.models.Transaction> transactions;
+
+                        if (takeSource == true)
+                        {
+                            transactions = contextLocal.Transactions.Include(t => t.SourceAccount).ThenInclude(a => a.Currency)
+                                .Where(t => t.SourceAccount.PlatformID == platform.ID && t.SourceAccount.CurrencyID == pairs.SourceCurrencyID);
+                        }
+                        else
+                        {
+                            transactions = contextLocal.Transactions.Include(t => t.TargetAccount).ThenInclude(a => a.Currency)
+                                .Where(t => t.SourceAccount.PlatformID == platform.ID && t.TargetAccount.CurrencyID == pairs.TargetCurrencyID);
+                        }
+
+                        if (transactions.Count() > 0)
+                        {
+                            var startDate = contextLocal.Transactions
+                                .OrderBy(t => new { t.Date })
+                                .First()
+                                .Date;
+
+                            var endDate = DateTime.Today.AddDays(-1);
+
+                            if (startDate != null)
+                            {
+                                var lastDate = contextLocal.PlatformRates
+                                    .Where(r => r.PlatformID == pairs.PlatformID && r.SourceCurrencyID == pairs.SourceCurrencyID && r.TargetCurrencyID == pairs.TargetCurrencyID)
+                                    .OrderByDescending(r => r.Date)
+                                    .FirstOrDefault(r => r.Date > startDate)?.Date;
+
+                                if (lastDate != null)
+                                    startDate = lastDate.Value;
+                            }
+
+                            var service = PlatformServices.Instance.Get(platform.Name.ToUpper());
+
+                            var results = service.RetrieveRates(pairs.SourceCurrency, pairs.TargetCurrency, startDate, endDate, 86400).Result;
+
+                            // Insert results in DB
+                            var rates = results.Rates.Select(r => new dal.models.PlatformRate()
+                            {
+                                PlatformID = platform.ID,
+                                SourceCurrencyID = pairs.SourceCurrencyID,
+                                TargetCurrencyID = pairs.TargetCurrencyID,
+                                Open = r.Value.Open,
+                                Close = r.Value.Close,
+                                High = r.Value.High,
+                                Low = r.Value.Low,
+                                Date = r.Value.Time,
+                                Volume = r.Value.Volume,
+                                RateSet = null,
+                            });
+
+                            contextLocal.PlatformRates.AddRange(rates);
+                            contextLocal.SaveChanges();
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -126,7 +126,7 @@ namespace web.Services
                     if (end < endLoop)
                         endLoop = end;
                     else
-                        System.Threading.Thread.Sleep(250);
+                        System.Threading.Thread.Sleep(2000);
                 }
                 catch(Exception ex)
                 {

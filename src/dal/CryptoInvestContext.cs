@@ -126,7 +126,11 @@ namespace dal
         {
             this.Database.Migrate();
             SeedData();
+            InitDefaultCurrency();
+        }
 
+        public void InitDefaultCurrency()
+        {
             this.DefaultFiatCurrency = this.Currencies.SingleOrDefault(c => c.Acronym == "EUR");
         }
 
