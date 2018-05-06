@@ -36,6 +36,9 @@ namespace web.Services
                         case "GDAX":
                             service = new GDAXPlatformService();
                             break;
+                        case "COINBASE":
+                            service = new CoinbasePlatformService();
+                            break;
                     }
 
                     if (service != null)
@@ -53,24 +56,6 @@ namespace web.Services
                 // Each platform will be synchronized asynchronously
                 Task.Run(() => SynchronizePlatformAsync(platformId));
             }
-        }
-
-        public static void SynchronizeDays(DateTime start, DateTime end, dal.models.Currency ccySource, dal.models.Currency ccyTarget, dal.CryptoInvestContext context)
-        {
-            start = start.Date;
-            end = end.Date;
-
-            var tasks = new List<Task>();
-
-            foreach (var service in PlatformServices.Instance)
-            {
-                tasks.Add(service.RetrieveRates(ccySource, ccyTarget, start, end, 86400));
-            }
-
-            Parallel.ForEach<Task>(tasks, task =>
-            {
-                task.Start();
-            });
         }
 
         private static void SynchronizePlatformAsync(int platformId)
@@ -99,6 +84,7 @@ namespace web.Services
                     {
                         IEnumerable<dal.models.Transaction> transactions;
 
+                        // Retrieving transaction on the current platform for the current currency pair
                         if (takeSource == true)
                         {
                             transactions = contextLocal.Transactions.Include(t => t.SourceAccount).ThenInclude(a => a.Currency)
@@ -112,45 +98,52 @@ namespace web.Services
 
                         if (transactions.Count() > 0)
                         {
+                            // Listing transactions dates
+                            var dates = transactions.Select(t => t.Date).Distinct().ToList();
+
                             var startDate = contextLocal.Transactions
                                 .OrderBy(t => new { t.Date })
                                 .First()
                                 .Date;
 
-                            var endDate = DateTime.Today.AddDays(-1);
-
-                            if (startDate != null)
-                            {
-                                var lastDate = contextLocal.PlatformRates
-                                    .Where(r => r.PlatformID == pairs.PlatformID && r.SourceCurrencyID == pairs.SourceCurrencyID && r.TargetCurrencyID == pairs.TargetCurrencyID)
-                                    .OrderByDescending(r => r.Date)
-                                    .FirstOrDefault(r => r.Date > startDate)?.Date;
-
-                                if (lastDate != null)
-                                    startDate = lastDate.Value;
-                            }
+                            // Listing already downloaded rate dates 
+                            var currentRateDates = contextLocal.PlatformRates
+                                .Where(r => r.PlatformID == pairs.PlatformID && r.SourceCurrencyID == pairs.SourceCurrencyID && r.TargetCurrencyID == pairs.TargetCurrencyID)
+                                .Select(r => r.Date);
 
                             var service = PlatformServices.Instance.Get(platform.Name.ToUpper());
 
-                            var results = service.RetrieveRates(pairs.SourceCurrency, pairs.TargetCurrency, startDate, endDate, 86400).Result;
+                            // We keep the dates which were not already downloaded
+                            dates.RemoveAll(d => currentRateDates.Contains(d));
 
-                            // Insert results in DB
-                            var rates = results.Rates.Select(r => new dal.models.PlatformRate()
+                            /*
+                             * TODO : gérer dates  qui ne retournent pas de données
+                             * VOIR PB GDAX BTC/EUR
+                             * */
+
+                            if (dates.Count() > 0)
                             {
-                                PlatformID = platform.ID,
-                                SourceCurrencyID = pairs.SourceCurrencyID,
-                                TargetCurrencyID = pairs.TargetCurrencyID,
-                                Open = r.Value.Open,
-                                Close = r.Value.Close,
-                                High = r.Value.High,
-                                Low = r.Value.Low,
-                                Date = r.Value.Time,
-                                Volume = r.Value.Volume,
-                                RateSet = null,
-                            });
+                                // Rates lookup
+                                var results = service.RetrieveRates(contextLocal, pairs.SourceCurrency, pairs.TargetCurrency, dates, 86400).Result;
 
-                            contextLocal.PlatformRates.AddRange(rates);
-                            contextLocal.SaveChanges();
+                                // Insert results in DB
+                                var rates = results.Rates.Select(r => new dal.models.PlatformRate()
+                                {
+                                    PlatformID = platform.ID,
+                                    SourceCurrencyID = pairs.SourceCurrencyID,
+                                    TargetCurrencyID = pairs.TargetCurrencyID,
+                                    Open = r.Value.Open,
+                                    Close = r.Value.Close,
+                                    High = r.Value.High,
+                                    Low = r.Value.Low,
+                                    Date = r.Value.Time,
+                                    Volume = r.Value.Volume,
+                                    RateSet = null,
+                                });
+
+                                contextLocal.PlatformRates.AddRange(rates);
+                                contextLocal.SaveChanges();
+                            }
                         }
                     }
                 }

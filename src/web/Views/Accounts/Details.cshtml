@@ -26,27 +26,27 @@
             Total credit
         </dt>
         <dd>
-            <span>@Model.Account.GetAmountString(Model.TotalGrossCredit)</span>
+            <span>@Model.Account.Currency.GetAmountString(Model.TotalGrossCredit)</span>
             @if (Model.TotalGrossCredit != Model.TotalNetCredit)
             {
-            <span class="small">(Net : @Model.Account.GetAmountString(Model.TotalNetCredit))</span>
+            <span class="small">(Net : @Model.Account.Currency.GetAmountString(Model.TotalNetCredit))</span>
             }
         </dd>
         <dt>
             Total debit 
         </dt>
         <dd>
-            <span>@Model.Account.GetAmountString(Model.TotalGrossDebit)</span>
+            <span>@Model.Account.Currency.GetAmountString(Model.TotalGrossDebit)</span>
             @if (Model.TotalGrossDebit != Model.TotalNetDebit)
             {
-            <span class="small">(Net : @Model.Account.GetAmountString(Model.TotalNetDebit))</span>
+            <span class="small">(Net : @Model.Account.Currency.GetAmountString(Model.TotalNetDebit))</span>
             }
         </dd>
         <dt>
             Balance
         </dt>
         <dd>
-            @Model.Account.GetAmountString(Model.GrossBalance)
+            @Model.Account.Currency.GetAmountString(Model.GrossBalance)
         </dd>
     </dl>
 </div>
@@ -92,7 +92,7 @@
                 @if (trx.Transaction.Type == dal.models.ETransactionType.BuySell)
                 {
                     <td>
-                        <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceGrossAmount)</span> 
+                        <trxamount transaction="@trx.Transaction" is-gross="true" is-source="true" default-currency="@Model.DefaultCurrency"></trxamount>
                         @if (trx.Transaction.SourceFees > 0)
                         {
                             <span><i class="glyphicon glyphicon-info-sign" title="Amount is GROSS (does not include source fees)"></i></span>
@@ -101,7 +101,7 @@
                         }
                     </td>
                     <td>
-                        <span>@trx.Transaction.TargetAccount.GetAmountString(trx.Transaction.TargetNetAmount)</span> 
+                        <trxamount transaction="@trx.Transaction" is-gross="false" is-source="false" default-currency="@Model.DefaultCurrency"></trxamount>
                         @if (trx.Transaction.TargetFees > 0)
                         {
                             <span><i class="glyphicon glyphicon-info-sign" title="Amount is NET (includes target fees)"></i></span>
@@ -110,13 +110,13 @@
                         }
                     </td>
                     <td>
-                        <span>@@ @trx.Transaction.SourceAccount.GetAmountString((trx.Transaction.SourceGrossAmount - trx.Transaction.SourceFees) / trx.Transaction.TargetNetAmount, includeCurrency: false) @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()/@trx.Transaction.TargetAccount?.Currency.GetCurrencySymbol()</span>
+                        <span>@@ @trx.Transaction.SourceAccount.Currency.GetAmountString((trx.Transaction.SourceGrossAmount - trx.Transaction.SourceFees) / trx.Transaction.TargetNetAmount, includeCurrency: false) @trx.Transaction.SourceAccount.Currency.GetCurrencySymbol()/@trx.Transaction.TargetAccount?.Currency.GetCurrencySymbol()</span>
                     </td>
                 }
                 else
                 {
                 <td colspan="3">
-                    <span>@trx.Transaction.SourceAccount.GetAmountString(trx.Transaction.SourceGrossAmount)</span>
+                    <trxamount transaction="@trx.Transaction" is-gross="true" is-source="true" default-currency="@Model.DefaultCurrency"></trxamount>
                     @if (trx.Transaction.SourceFees > 0)
                     {
                     <br/>

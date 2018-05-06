@@ -67,5 +67,11 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </body>
 </html>

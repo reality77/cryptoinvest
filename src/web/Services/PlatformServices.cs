@@ -72,16 +72,15 @@ namespace web.Services
 
     public class PlatformRateResult
     {
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public IEnumerable<DateTime> Dates { get; set; }
 
         public dal.models.Currency CurrencySource { get; set; }
         public dal.models.Currency CurrencyTarget { get; set; }
 
-        public Dictionary<DateTime, PlatformRate> Rates { get; set; }
+        public Dictionary<DateTime, PlatformRateData> Rates { get; set; }
     }
 
-    public class PlatformRate
+    public class PlatformRateData
     {
         public DateTime Time { get; set; }
         public decimal Low { get; set; }

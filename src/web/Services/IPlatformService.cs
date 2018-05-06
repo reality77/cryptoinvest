@@ -1,4 +1,6 @@
-﻿using System;
+﻿using dal;
+using dal.models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +14,8 @@ namespace web.Services
 
         string ApiUrl { get; }
 
-        Task InitCurrencyPairs(dal.CryptoInvestContext context);
+        Task InitCurrencyPairs(CryptoInvestContext context);
 
-        Task<PlatformRate> RetrieveDayRate(dal.models.Currency currencySource, dal.models.Currency currencyTarget, DateTime day);
-
-        Task<PlatformRateResult> RetrieveRates(dal.models.Currency currencySource, dal.models.Currency currencyTarget, DateTime start, DateTime end, int granularity);
+        Task<PlatformRateResult> RetrieveRates(CryptoInvestContext context, Currency currencySource, Currency currencyTarget, IEnumerable<DateTime> datesToDownload, int granularity);
     }
 }

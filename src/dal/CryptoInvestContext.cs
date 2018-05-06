@@ -11,6 +11,7 @@ namespace dal
         public CryptoInvestContext(DbContextOptions options)
             : base(options)
         {
+            InitDefaultCurrency();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,6 +24,10 @@ namespace dal
                 .HasIndex(x => x.Name)
                 .IsUnique(true);
 
+            modelBuilder.Entity<Platform>()
+                .HasIndex(x => new { x.Name })
+                .IsUnique(true);
+
             modelBuilder.Entity<Account>()
                 .HasIndex(x => new { x.UserID, x.Name })
                 .IsUnique(true);
@@ -31,6 +36,12 @@ namespace dal
                 .HasOne(x => x.Currency)
                 .WithMany(x => x.Accounts)
                 .HasForeignKey(x => x.CurrencyID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Account>()
+                .HasOne(x => x.Platform)
+                .WithMany(x => x.Accounts)
+                .HasForeignKey(x => x.PlatformID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Transaction>()
@@ -59,10 +70,6 @@ namespace dal
 
             modelBuilder.Entity<Transaction>(pt => pt.Property(p => p.Date)
                 .HasColumnType("date"));
-
-            modelBuilder.Entity<Platform>()
-                .HasIndex(x => new { x.Name })
-                .IsUnique(true);
 
             modelBuilder.Entity<PlatformRate>()
                 .HasIndex(x => new { x.PlatformID, x.SourceCurrencyID, x.TargetCurrencyID, x.Date })
@@ -126,7 +133,6 @@ namespace dal
         {
             this.Database.Migrate();
             SeedData();
-            InitDefaultCurrency();
         }
 
         public void InitDefaultCurrency()

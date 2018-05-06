@@ -57,22 +57,6 @@ namespace dal.models
 
         public decimal GetBalance(bool netAmount = false) => GetCreditSum(netAmount) - GetDebitSum(netAmount);
 
-
-        public string GetAmountString(decimal amount, bool includeCurrency = true)
-        {
-            decimal amountRounded;
-
-            if (this.Currency.RoundToDecimals != null)
-                amountRounded = Math.Round(amount, this.Currency.RoundToDecimals.Value);
-            else
-                amountRounded = amount;
-
-            if (includeCurrency)
-                return amountRounded.ToString() + " " + this.Currency.GetCurrencySymbol();
-            else
-                return amountRounded.ToString();
-        }
-
         public override string ToString()
         {
             return $"{this.Name} ({this.ID})";

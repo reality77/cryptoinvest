@@ -60,6 +60,7 @@ namespace web.Controllers
 
             var model = new AccountDetailsModel
             {
+                DefaultCurrency = _context.DefaultFiatCurrency,
                 TotalNetDebit = account.GetDebitSum(netAmount: true),
                 TotalNetCredit = account.GetCreditSum(netAmount: true),
                 TotalGrossDebit = account.GetDebitSum(netAmount: false),

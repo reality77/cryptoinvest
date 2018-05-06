@@ -43,5 +43,21 @@ namespace dal.models
         {
             return $"{this.Acronym} ({this.ID})";
         }
+
+        public string GetAmountString(decimal amount, bool includeCurrency = true)
+        {
+            decimal amountRounded;
+
+            if (this.RoundToDecimals != null)
+                amountRounded = Math.Round(amount, this.RoundToDecimals.Value);
+            else
+                amountRounded = amount;
+
+            if (includeCurrency)
+                return amountRounded.ToString() + " " + this.GetCurrencySymbol();
+            else
+                return amountRounded.ToString();
+        }
+
     }
 }

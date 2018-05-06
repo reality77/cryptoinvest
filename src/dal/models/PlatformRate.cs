@@ -40,5 +40,15 @@ namespace dal.models
         public decimal? Close { get; set; }
 
         public decimal? Volume { get; set; }
+
+        public decimal? GetDayRate()
+        {
+            if (RateSet != null)
+                return RateSet;
+            else if(this.Open != null && this.Close != null)
+                return (Close.Value + Open.Value) / 2;
+
+            return null;
+        }
     }
 }

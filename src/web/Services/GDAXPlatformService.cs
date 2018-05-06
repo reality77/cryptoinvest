@@ -7,6 +7,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using dal.models;
+using Serilog;
 
 namespace web.Services
 {
@@ -48,7 +50,7 @@ namespace web.Services
                         if (sourceCurrency == null || targetCurrency == null)
                             continue;
 
-                        platform.PlatformCurrencyPairs.Add(new dal.models.PlatformCurrencyPair
+                        platform.PlatformCurrencyPairs.Add(new PlatformCurrencyPair
                         {
                             SourceCurrencyID = sourceCurrency.ID,
                             TargetCurrencyID = targetCurrency.ID,
@@ -65,41 +67,50 @@ namespace web.Services
             }
         }
 
-        public async Task<PlatformRate> RetrieveDayRate(dal.models.Currency currencySource, dal.models.Currency currencyTarget, DateTime day)
+        public async Task<PlatformRateResult> RetrieveRates(CryptoInvestContext context, Currency currencySource, Currency currencyTarget, IEnumerable<DateTime> datesToDownload, int granularity)
         {
-            var start = day.Date;
-            var end = start.AddDays(1);
+            // Pour GDAX, nous recherchons toutes les dates 
+            var platform = context.Platforms.Include(p => p.PlatformRates).Include(p => p.PlatformCurrencyPairs)
+                .SingleOrDefault(p => p.Name == this.PlatformName);
 
-            var rates = await RetrieveRates(currencySource, currencyTarget, start, end, 86400);
-            return rates.Rates[start];
-        }
+            var startDate = datesToDownload.Min();
+            var endDate = datesToDownload.Max();
 
-        public async Task<PlatformRateResult> RetrieveRates(dal.models.Currency currencySource, dal.models.Currency currencyTarget, DateTime start, DateTime end, int granularity)
-        {
             var product = $"{currencySource.Acronym}-{currencyTarget.Acronym}";
 
             if (!s_granularitiesAllowed.Contains(granularity))
                 throw new Exception($"Granularity must be one of these values : {s_granularitiesAllowed.Select(g => g.ToString()).Aggregate((x, y) => x + ", " + y)}");
 
-            var ratesResults = new List<PlatformRate>();
+            // Vue que le service GDAX recherche toutes les dates, on peut partir de la dernière date en base
+            var lastDate = context.PlatformRates
+                .Where(r => r.PlatformID == platform.ID && r.SourceCurrencyID == currencySource.ID && r.TargetCurrencyID == currencyTarget.ID)
+                .OrderByDescending(r => r.Date)
+                .FirstOrDefault(r => r.Date > startDate)?.Date;
+
+            if (lastDate != null)
+                startDate = lastDate.Value;
+
+            var ratesResults = new List<PlatformRateData>();
 
             var results = new PlatformRateResult
             {
                 CurrencySource = currencySource,
                 CurrencyTarget = currencyTarget,
-                Start = start,
-                End = end,
+                Dates = datesToDownload,
             };
 
-            DateTime startLoop = start;
+            if (startDate >= endDate)
+                return results;
+
+            DateTime startLoop = startDate;
             DateTime endLoop = startLoop.AddDays(GDAX_MAX_RESPONSES);
 
-            if (end < endLoop)
-                endLoop = end;
+            if (endDate < endLoop)
+                endLoop = endDate;
 
-            while (endLoop < end)
+            try
             {
-                try
+                while (endLoop < endDate)
                 {
                     var ratesJson = await CallApi($"products/{product}/candles?start={startLoop.ToString(GDAX_DATE_FORMAT)}&end={endLoop.ToString(GDAX_DATE_FORMAT)}&granularity={granularity}");
 
@@ -109,7 +120,7 @@ namespace web.Services
                     {
                         var arData = r.ToArray();
 
-                        return new PlatformRate
+                        return new PlatformRateData
                         {
                             Time = DateTimeExtensions.FromUnixTime(Convert.ToInt64(arData[0])),
                             Low = Convert.ToDecimal(arData[1]),
@@ -123,15 +134,15 @@ namespace web.Services
                     startLoop = endLoop.AddDays(1);
                     endLoop = startLoop.AddDays(GDAX_MAX_RESPONSES);
 
-                    if (end < endLoop)
-                        endLoop = end;
+                    if (endDate < endLoop)
+                        endLoop = endDate;
                     else
-                        System.Threading.Thread.Sleep(2000);
+                        System.Threading.Thread.Sleep(2000);    // pour éviter des erreurs 429 - Too Much Requests
                 }
-                catch(Exception ex)
-                {
-
-                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("RetrieveRates for {PlatformName} error : {Message}", this.PlatformName, ex.Message);
             }
 
             results.Rates = ratesResults.ToDictionary(k => k.Time);            

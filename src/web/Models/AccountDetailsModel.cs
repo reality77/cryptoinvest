@@ -13,6 +13,8 @@ namespace web.Models
 
     public class AccountDetailsModel
     {
+        public dal.models.Currency DefaultCurrency { get; set; }
+
         public decimal TotalNetDebit { get; set; }
         public decimal TotalNetCredit { get; set; }
 
