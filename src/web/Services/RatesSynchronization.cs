@@ -39,6 +39,9 @@ namespace web.Services
                         case "COINBASE":
                             service = new CoinbasePlatformService();
                             break;
+                        case "KRAKEN":
+                            service = new KrakenPlatformService();
+                            break;
                     }
 
                     if (service != null)
